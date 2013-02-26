@@ -1,23 +1,38 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"io"
 	"os"
 )
 
 func main() {
-	ReadCSV("test.csv", "x")
+	var delimiter string = ","
+	ReadCSV("test.csv", delimiter)
 }
 
-func ReadCSV(filename string, delimiter byte) {
+func ReadCSV(filename string, delimiter string) (err error) {
 	fmt.Println("Trying to use file " + filename + " as csv with " + delimiter + " as delimiter")
 
 	//try reading file, defer close
 	fileHandle, err := os.Open(filename)
 	if err != nil {
-		fmt.Println("file not found")
-		os.Exit(99)
+		return err
 	}
 	defer fileHandle.Close()
+
+	//read file linewise until nothing is left
+	reader := bufio.NewReader(fileHandle)
+	for {
+		line, err := reader.ReadString(10)
+		fmt.Println(line)
+		if err == io.EOF {
+			break
+		} else if err != nil {
+			return err
+		}
+	}
+	return nil
 
 }
