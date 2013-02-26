@@ -9,7 +9,9 @@ import (
 
 func main() {
 	var delimiter string = ","
-	ReadCSV("test.csv", delimiter)
+	if err := ReadCSV("test.csv", delimiter); err != nil {
+		fmt.Println("Aborted with err ", err)
+	}
 }
 
 func ReadCSV(filename string, delimiter string) (err error) {
