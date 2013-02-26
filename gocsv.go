@@ -7,6 +7,13 @@ import (
 	"os"
 )
 
+type csvHead string
+type csvLine map[csvHead]string
+type csvContents struct {
+	csvLines    []csvLine
+	csvHeadline []string
+}
+
 func main() {
 	var delimiter string = ","
 	if err := ReadCSV("test.csv", delimiter); err != nil {
@@ -26,9 +33,18 @@ func ReadCSV(filename string, delimiter string) (err error) {
 
 	//read file linewise until nothing is left
 	reader := bufio.NewReader(fileHandle)
+	var isHeadline bool = true
 	for {
 		line, err := reader.ReadString(10)
-		fmt.Println(line)
+
+		//if this is the first line, use it as header
+		if isHeadline {
+			BuildCSVHeadline(line)
+			isHeadline = false
+		} else {
+			fmt.Print(line)
+		}
+
 		if err == io.EOF {
 			break
 		} else if err != nil {
